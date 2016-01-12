@@ -69,20 +69,26 @@ module.exports = function(grunt) {
       //Create the maintenance branch.
       grunt.config('maintenance.branch', branch);
       
-      //Run checkout task
-    //   grunt.task.run(['gitcheckout']);
       console.log('See version ===> ', grunt.config('maintenance.branch'));
       
       //Make native calls 
-      var exec = require('child_process').exec;
+    //   var exec = require('child_process').exec;
+      var sh = require('execSync').sh;
       
       var command = 'git branch ' + branch;
       
-      exec(command, function(err, stdout, stderr) {
-          if(err) {
-              stderr.writeSync('Could not create maintenance branch');
-          }
-      });
+      var ret = sh(command);
+      
+      if(ret === 0) {
+          sh('git push --set-upstream upstream ' + branch);
+      }
+    
+     sh('git status');      
+    //   exec(command, function(err, stdout, stderr) {
+    //       if(err) {
+    //           stderr.writeSync('Could not create maintenance branch');
+    //       }
+    //   });
   });
   
   // Default task.
