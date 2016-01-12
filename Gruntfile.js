@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(grunt) {
-  
+  var npmProps = grunt.file.readJSON('package.json');
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
   
@@ -38,6 +38,16 @@ module.exports = function(grunt) {
         tasks: ['jshint:test', 'nodeunit']
       },
     },
+    
+    gitcheckout: {
+        maintenance: {
+            options: {
+                branch: grunt.config('maintenance.branch'),
+                create: true
+            }
+        }
+    },
+    
     release: {
         options: {
           npm: false,
@@ -50,6 +60,31 @@ module.exports = function(grunt) {
   }
   });
 
+  grunt.registerTask('maintenance-branch', function() {
+      var version = npmProps.version;
+      //Get up to minor version.
+      var last = version.indexOf('.',version.indexOf('.')+1);
+      var branch = version.substring(0, last+1).concat('x');
+      
+      //Create the maintenance branch.
+      grunt.config('maintenance.branch', branch);
+      
+      //Run checkout task
+    //   grunt.task.run(['gitcheckout']);
+      console.log('See version ===> ', grunt.config('maintenance.branch'));
+      
+      //Make native calls 
+      var exec = require('child_process').exec;
+      
+      var command = 'git branch ' + branch;
+      
+      exec(command, function(err, stdout, stderr) {
+          if(err) {
+              stderr.writeSync('Could not create maintenance branch');
+          }
+      });
+  });
+  
   // Default task.
   grunt.registerTask('default', ['jshint', 'nodeunit']);
 

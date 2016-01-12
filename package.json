@@ -33,6 +33,7 @@
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-watch": "~0.5.3",
+    "grunt-git": "^0.3.7",
     "grunt-release": "^0.13.0",
     "load-grunt-tasks": "^3.4.0",
     "pre-git": "^3.3.0"
@@ -41,13 +42,19 @@
   "config": {
     "pre-git": {
       "commit-msg": [],
-      "pre-commit": ["grunt jshint"],
-      "pre-push": [
-          "npm install",
-          "grunt build"
+      "pre-commit": [
+        "grunt jshint"
       ],
-      "post-commit": ["git status"],
-      "post-merge": ["npm install"]
+      "pre-push": [
+        "npm install",
+        "grunt build"
+      ],
+      "post-commit": [
+        "git status"
+      ],
+      "post-merge": [
+        "npm install"
+      ]
     }
   }
 }
