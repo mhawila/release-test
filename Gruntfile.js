@@ -155,7 +155,7 @@ module.exports = function(grunt) {
   grunt.registerTask('release-prepare', function(target) {
       // release
       if(target) {
-          grunt.task.run('release:target');
+          grunt.task.run('release:'+target);
       } else {
           grunt.task.run('release');
       }
