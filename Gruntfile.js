@@ -70,7 +70,7 @@ module.exports = function(grunt) {
     gitcommit: {
         snapshot: {
             options: {
-                message: 'Committing version change to ' + grunt.config('snapshot.version'),
+                message: 'Committing version change to SNAPSHOT version',
                 noVerify: false,
                 noStatus: false
             },
@@ -152,7 +152,29 @@ module.exports = function(grunt) {
       grunt.task.run(['gitcommit:snapshot', 'gitpush:snapshot']);
   });
   
-  
+  grunt.registerTask('release-prepare', function(target) {
+      // release
+      if(target) {
+          grunt.task.run('release:target');
+      } else {
+          grunt.task.run('release');
+      }
+      
+      // build
+    //   grunt.task.run('build');
+      
+      // Create maintenance branch if minor or major 
+      if(target === 'major' || target === 'minor') {
+          grunt.task.run('maintenance-branch');
+      }
+      
+      // Update versions to snapshot.
+      if(target === 'major' || target === 'minor') { //Both update minor version
+          grunt.task.run('snapshot:minor');
+      } else {
+          grunt.task.run('snapshot');
+      } 
+  });
   // Default task.
   grunt.registerTask('default', ['jshint', 'nodeunit']);
 
