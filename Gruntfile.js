@@ -77,7 +77,7 @@ module.exports = function(grunt) {
       
       if(ret.status === 0) {
           console.log('Setting ', branch, ' to track upstream/', branch);
-          ret = exec('git branch --set-upstream=origin/' + branch + ' ' + branch);
+          ret = exec('git branch --set-upstream-to=origin/' + branch + ' ' + branch);
           console.log(ret.stdout, ret.stderr);
       }
       
