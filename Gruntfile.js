@@ -66,10 +66,8 @@ module.exports = function(grunt) {
       var last = version.indexOf('.',version.indexOf('.')+1);
       var branch = version.substring(0, last+1).concat('x');
       
-      //Create the maintenance branch.
-      grunt.config('maintenance.branch', branch);
-      
-      console.log('See version ===> ', grunt.config('maintenance.branch'));
+      //Create the maintenance branch.      
+      console.log('Creating maintenance branch => ', branch);
       
       //Make native calls 
       var exec = require('sync-exec');
