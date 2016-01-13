@@ -1,7 +1,16 @@
 'use strict';
 
 module.exports = function(grunt) {
-  var npmProps = grunt.file.readJSON('package.json');
+  
+  function _splitVersionNumber(version) {
+      var parts = version.split('.');
+      return {
+          array: parts,
+          major: parts[0],
+          minor: parts[1],
+          patch: parts[2]
+      };
+  }
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
   
@@ -61,10 +70,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('maintenance-branch', function() {
-      var version = npmProps.version;
-      //Get up to minor version.
-      var last = version.indexOf('.',version.indexOf('.')+1);
-      var branch = version.substring(0, last+1).concat('x');
+      var npmProps = grunt.file.readJSON('package.json');
+      var versionParts = _splitVersionNumber(npmProps.version);
+      
+      var branch = versionParts.major + '.' + versionParts.minor + '.x';
       
       //Create the maintenance branch.      
       console.log('Creating maintenance branch => ', branch);
@@ -83,6 +92,25 @@ module.exports = function(grunt) {
       
       console.log(exec('git status').stdout);
   });
+  
+  grunt.registerTask('snapshot', function(target) {
+      //Here we update the master to snapshot version.
+      var npmProps = grunt.config.readJSON('package.json');
+      
+      var vParts = _splitVersionNumber(npmProps.version);
+      var minor = vParts.minor;
+      var patch = 0;
+      if(target === 'minor') {
+          minor += 1;
+      } else {  //Patch version is to be upgraded
+          patch = vParts.patch += 1;
+      }
+      var snapshotVersion = vParts.major + '.' + minor + '.' + patch + '-SNAPSHOT';
+      
+      npmProps.version = snapshotVersion;
+      grunt.config.writeJSON('package.json');
+  });
+  
   
   // Default task.
   grunt.registerTask('default', ['jshint', 'nodeunit']);
