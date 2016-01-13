@@ -48,13 +48,12 @@ module.exports = function(grunt) {
       },
     },
     
-    gitcheckout: {
-        maintenance: {
-            options: {
-                branch: grunt.config('maintenance.branch'),
-                create: true
-            }
-        }
+    jsonprettify: {
+        options: {
+          space: '\t'
+        },
+ 
+        tools: { src: ['package.json', 'bower.json'] }
     },
     
     release: {
@@ -98,17 +97,34 @@ module.exports = function(grunt) {
       var npmProps = grunt.file.readJSON('package.json');
       
       var vParts = _splitVersionNumber(npmProps.version);
-      var minor = vParts.minor;
+      var minor = Number(vParts.minor);
       var patch = 0;
       if(target === 'minor') {
-          minor += 1;
+          minor++;
       } else {  //Patch version is to be upgraded
-          patch = vParts.patch += 1;
+          if(!isNaN(vParts.patch)) {
+              patch++;
+          } else {
+              // Try to get the initial part.
+              var i=0;
+              var num = '';
+              while(i < vParts.patch.length) {
+                  if(isNaN(vParts.patch[i])){
+                      break;
+                  }
+                  num = num.concat(vParts.patch[i]);
+                  i++;
+              }
+              patch = num.length>0 ? Number(num)+1 : 0;
+          }
       }
       var snapshotVersion = vParts.major + '.' + minor + '.' + patch + '-SNAPSHOT';
       
       npmProps.version = snapshotVersion;
       grunt.file.write('package.json', JSON.stringify(npmProps));
+      grunt.task.run(['jsonprettify']);
+      
+      //Commit the changes.
   });
   
   
