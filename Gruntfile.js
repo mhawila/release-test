@@ -95,7 +95,7 @@ module.exports = function(grunt) {
   
   grunt.registerTask('snapshot', function(target) {
       //Here we update the master to snapshot version.
-      var npmProps = grunt.config.readJSON('package.json');
+      var npmProps = grunt.file.readJSON('package.json');
       
       var vParts = _splitVersionNumber(npmProps.version);
       var minor = vParts.minor;
@@ -108,7 +108,7 @@ module.exports = function(grunt) {
       var snapshotVersion = vParts.major + '.' + minor + '.' + patch + '-SNAPSHOT';
       
       npmProps.version = snapshotVersion;
-      grunt.config.writeJSON('package.json');
+      grunt.file.write('package.json', JSON.stringify(npmProps));
   });
   
   
