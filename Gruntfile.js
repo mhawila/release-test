@@ -72,23 +72,17 @@ module.exports = function(grunt) {
       console.log('See version ===> ', grunt.config('maintenance.branch'));
       
       //Make native calls 
-    //   var exec = require('child_process').exec;
-      var sh = require('execSync').sh;
+      var exec = require('sync-exec');
+  
+      var ret = exec('git branch ' + branch);
+      console.log(ret.stdout, ret.stderr);
       
-      var command = 'git branch ' + branch;
-      
-      var ret = sh(command);
-      
-      if(ret === 0) {
-          sh('git push --set-upstream upstream ' + branch);
+      if(ret.status === 0) {
+          ret = exec('git push --set-upstream origin ' + branch);
+          console.log(ret.stdout, ret.stderr);
       }
-    
-     sh('git status');      
-    //   exec(command, function(err, stdout, stderr) {
-    //       if(err) {
-    //           stderr.writeSync('Could not create maintenance branch');
-    //       }
-    //   });
+      
+      console.log(exec('git status').stdout);
   });
   
   // Default task.
