@@ -65,7 +65,28 @@ module.exports = function(grunt) {
           afterRelease: [], // optional grunt tasks to run after release is packaged
           updateVars: [], // optional grunt config objects to update (this will update/set the version property on the object specified)
         }
-  }
+    },
+    
+    gitcommit: {
+        snapshot: {
+            options: {
+                message: 'Committing version change to ' + grunt.config('snapshot.version'),
+                noVerify: false,
+                noStatus: false
+            },
+            files: {
+                src: ['package.json']
+            }
+        }
+    },
+    
+    gitpush: {
+        snapshot: {
+            options: {
+                remote: 'origin'
+            }
+        }
+    }
   });
 
   grunt.registerTask('maintenance-branch', function() {
@@ -120,11 +141,15 @@ module.exports = function(grunt) {
       }
       var snapshotVersion = vParts.major + '.' + minor + '.' + patch + '-SNAPSHOT';
       
+      //Store it in config params for commit message
+      grunt.config('snapshot.version', snapshotVersion);
+      
       npmProps.version = snapshotVersion;
       grunt.file.write('package.json', JSON.stringify(npmProps));
       grunt.task.run(['jsonprettify']);
       
-      //Commit the changes.
+      //Commit the changes & push to remote
+      grunt.task.run(['gitcommit:snapshot', 'gitpush:snapshot']);
   });
   
   
