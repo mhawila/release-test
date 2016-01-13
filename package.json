@@ -47,8 +47,6 @@
 				"grunt jshint"
 			],
 			"pre-push": [
-				"npm install",
-				"grunt build"
 			],
 			"post-commit": [
 				"git status"
